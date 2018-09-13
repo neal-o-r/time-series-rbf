@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression, Ridge
 from sklearn.svm import SVR
+from gaussian_features import GaussianFeatures
 
 plt.style.use('ggplot')
 np.random.seed(123)
@@ -51,6 +52,13 @@ def fit_linear(x_train, y_train, x_test):
         return model.predict(make_design_matrix(x_test))
 
 
+def fit_gaussian_feats(x_train, y_train, x_test):
+        model = Ridge(alpha=100)
+        gf = GaussianFeatures(50)
+        model.fit(gf.fit_transform(x_train % 52), y_train)
+
+        return model.predict(gf.transform(x_test % 52))
+
 if __name__ == '__main__':
 
         x, y, u = get_data()
@@ -59,7 +67,7 @@ if __name__ == '__main__':
         x_test, y_test, u_test = x[-50:], y[-50:], u[-50:]
 
         X_d = make_design_matrix(x_train)
-        yhat = fit_linear(x_train, y_train, x)
+        yhat = fit_gaussian_feats(x_train, y_train, x)
 
 
         plt.errorbar(x_train, y_train, yerr=u_train, fmt='.b', alpha=0.5)
